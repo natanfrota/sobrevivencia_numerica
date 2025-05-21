@@ -17,10 +17,9 @@ public class Juiz {
     }
 
     public void aguardarJogadores() throws IOException {
-        int contJogadores = 0;
         System.out.println("Aguardando os jogadores...");
 
-        while (contJogadores < this.NUMERO_DE_JOGADORES) {
+        while (this.jogadores.size() < this.NUMERO_DE_JOGADORES) {
 
             byte[] dado = new byte[50]; // armazena o nome do jogador que vem na requisição
             DatagramPacket requisicao = new DatagramPacket(dado, dado.length);
@@ -42,8 +41,6 @@ public class Juiz {
 
             // envia a mensagem para o cliente
             this.soqueteServidor.send(resposta);
-
-            contJogadores++;
         }
     }
 
