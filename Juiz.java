@@ -20,9 +20,6 @@ public class Juiz {
         System.out.println("Aguardando os jogadores...");
 
         while (this.jogadores.size() < this.NUMERO_DE_JOGADORES) {
-            System.out.println(this.jogadores.size() + " jogadores encontrados...");
-
-
             byte[] dado = new byte[50]; // armazena o nome do jogador que vem na requisição
             DatagramPacket requisicao = new DatagramPacket(dado, dado.length);
             this.soqueteServidor.receive(requisicao);
@@ -58,17 +55,13 @@ public class Juiz {
           
            String mensagem = new String(pacote.getData()).trim();
            int numero = Integer.parseInt(mensagem); 
-           SocketAddress endereço = pacote.getSocketAddress();
+           SocketAddress endereco = pacote.getSocketAddress();
            Jogador jogador = jogadores.get(endereco);
 
            if(jogador != null){
                 jogador.setNumeroEscolhido(numero); // armazena o numero que ele enviou no objeto jogador
-                contadorDeNumeros++; // contar quantos envaram e serve para parar o for 
-                System.out.println(jogador.getNome() + " escolheu: " + numero);
-                 // msg de confirmaçao
-                 byte[] confirmacao = "Numero recebido".getBytes();
-                 // envia o pacote udp de volta para o endereço do jogador que enviou o numero
-                 soqueteServidor.send(new DatagramPacket(confirmacao, confirmacao.length, endereco));
+                contadorDeNumeros++; // contar quantos enviaram e serve para parar o for 
+                System.out.println("Jogador(a) " + jogador.getNome() + " escolheu o número: " + jogador.getNumeroEscolhido());
            }
 
         }
