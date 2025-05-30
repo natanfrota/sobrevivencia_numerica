@@ -18,6 +18,7 @@ public class Cliente {
         System.out.println("Digite 3 - para sair do jogo.");
 
         int PONTUACAO_DE_ELIMINACAO = -6;
+        int PONTUACAO_DE_VITORIA = 10;
         
         DatagramSocket soquete = null;
 
@@ -27,9 +28,7 @@ public class Cliente {
             InetAddress enderecoServidor = InetAddress.getByName("localhost");
             int portaServidor = 57_651;
             
-            String status;
             int placar;
-
            
             DatagramPacket requisicao = new DatagramPacket(nome.getBytes(), nome.getBytes().length, enderecoServidor, portaServidor);
 
@@ -45,9 +44,9 @@ public class Cliente {
             System.out.println(new String(resposta.getData()));
 
             do {
-                System.out.println("Escolha um número entre 0 e 100: ");
                 int numero;
                 do {
+                    System.out.println("Escolha um número entre 0 e 100: ");
                     numero = sc.nextInt();
                 } while(numero < 0 || numero > 100);
 
@@ -60,25 +59,21 @@ public class Cliente {
                 soquete.send(requisicao2);
 
                 System.out.println("Aguardando a atualização de seu placar...");
-                byte[] conteudo3 = new byte[100];
+                byte[] conteudo3 = new byte[10];
                 DatagramPacket resposta2 = new DatagramPacket(conteudo3, conteudo3.length);
                 soquete.receive(resposta2);
 
-                String[] mensagem = new String(resposta2.getData()).trim().split(" ");
-                placar = Integer.parseInt(mensagem[0]);
-                status = mensagem[1];
+                placar = Integer.parseInt(new String(resposta2.getData()).trim());
             
                 System.out.println("Seu placar é: " + placar);
 
-            } while(status.equals("CONTINUE"));
+            } while(placar > PONTUACAO_DE_ELIMINACAO && placar != PONTUACAO_DE_VITORIA);
 
             if(placar <= PONTUACAO_DE_ELIMINACAO){
                 System.out.println("Você foi eliminado(a)!");
             } else {
                 System.out.println("Você foi o(a) vencedor(a)!");
             }
-
-
 
 
         } catch (SocketException e) {

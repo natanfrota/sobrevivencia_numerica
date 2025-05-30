@@ -100,17 +100,7 @@ public class Juiz {
             for(Jogador jogador : this.jogadores.values()){
                 System.out.println("Enviando placar para " + posicoes[i] + " jogador " + jogador.getPontuacao());
 
-
-                // verifica quem será eliminado
-                String mensagem;
-                if(jogador.getPontuacao() <= -6){
-                    mensagem = jogador.getPontuacao() + " FIM";
-                } else {
-                    mensagem = jogador.getPontuacao() + " CONTINUE";
-                }
-
-
-                byte[] placar = mensagem.getBytes();
+                byte[] placar = String.valueOf(jogador.getPontuacao()).getBytes();
                 DatagramPacket resposta = new DatagramPacket(placar, placar.length, jogador.getEnderecoSoquete());
                 soqueteServidor.send(resposta);
 
