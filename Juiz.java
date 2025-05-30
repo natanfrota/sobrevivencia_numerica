@@ -34,14 +34,6 @@ public class Juiz {
             System.out.println("Jogador(a): " + novoJogador.getNome() + " entrou no jogo.");
             System.out.println("IP: " + requisicao.getAddress());
             System.out.println("Porta: " + requisicao.getPort());
-
-            /* // deixei isso no lado do cliente
-            
-            byte[] mensagem = "Aguardando jogadores oponentes...".getBytes();
-            DatagramPacket resposta = new DatagramPacket(mensagem, mensagem.length, novoJogador.getEnderecoSoquete());
-
-            // envia a mensagem para o cliente
-            this.soqueteServidor.send(resposta); */
         }
     }
 
@@ -104,10 +96,21 @@ public class Juiz {
 
             String[] posicoes = {"primeiro", "segundo", "terceiro"};
             int i = 0;
+
             for(Jogador jogador : this.jogadores.values()){
                 System.out.println("Enviando placar para " + posicoes[i] + " jogador " + jogador.getPontuacao());
 
-                byte[] placar = String.valueOf(jogador.getPontuacao()).getBytes();
+
+                // verifica quem será eliminado
+                String mensagem;
+                if(jogador.getPontuacao() <= -6){
+                    mensagem = jogador.getPontuacao() + " FIM";
+                } else {
+                    mensagem = jogador.getPontuacao() + " CONTINUE";
+                }
+
+
+                byte[] placar = mensagem.getBytes();
                 DatagramPacket resposta = new DatagramPacket(placar, placar.length, jogador.getEnderecoSoquete());
                 soqueteServidor.send(resposta);
 
@@ -123,13 +126,12 @@ public class Juiz {
                 }
             }
             if(chave != null){
-                Jogador jogador = this.jogadores.remove(chave);
-                System.out.println("Jogador(a) " + jogador.getNome() + " foi eliminado(a).");
+                 Jogador jogador = this.jogadores.remove(chave);
+                 System.out.println("Jogador(a) " + jogador.getNome() + " foi eliminado(a).");
             }
 
-        }
-
         // quando houver apenas dois
+        }
     }
 
     private void enviarConfirmacao() throws IOException {
