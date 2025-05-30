@@ -39,7 +39,7 @@ public class Juiz {
 
     public void receberNumerosEscolhidos() throws IOException{
         int contadorDeNumeros = 0;
-        while(contadorDeNumeros < this.NUMERO_DE_JOGADORES){
+        while(contadorDeNumeros < this.jogadores.size()){
            byte[] buffer = new byte[50]; 
            DatagramPacket pacote = new DatagramPacket(buffer, buffer.length); // cria um pacote UDP para receber a mensagem e liga esse pacote a um vetor
            this.soqueteServidor.receive(pacote); //espera a msg e quando chegar armazena dentro do vetor num
@@ -69,8 +69,8 @@ public class Juiz {
         // recebe os números dos jogadores enquanto houver três jogadores; pois, ao sair um, as regras mudam
         System.out.println("Aguardando os números de cada jogador...");
         
-        // enquanto isso for verdadeiro, o jogo tem três jogadores
-        while(this.jogadores.size() == this.NUMERO_DE_JOGADORES){
+        // enquanto o jogo tiver mais de um jogador
+        while(this.jogadores.size() > 1){
             receberNumerosEscolhidos();
 
             System.out.println("Realizando cálculo da média...");
@@ -129,9 +129,9 @@ public class Juiz {
                  Jogador jogador = this.jogadores.remove(chave);
                  System.out.println("Jogador(a) " + jogador.getNome() + " foi eliminado(a).");
             }
-
-        // quando houver apenas dois
         }
+        
+        
     }
 
     private void enviarConfirmacao() throws IOException {
@@ -162,32 +162,51 @@ public class Juiz {
     public void calcularPlacar(double valorAlvo){
         Jogador[] tempJogadores = this.jogadores.values().toArray(new Jogador[this.jogadores.size()]);
 
-        for (int i = 0; i < tempJogadores.length - 1; i++){
-            for (int j = i + 1; j < tempJogadores.length; j++){
-                if(tempJogadores[i].calcularDiferença(valorAlvo) > tempJogadores[j].calcularDiferença(valorAlvo)){
-                    Jogador temp = tempJogadores[i];
-                    tempJogadores[i] = tempJogadores[j];
-                    tempJogadores[j] = temp;
+        if (jogadores.size() == this.NUMERO_DE_JOGADORES){
+
+            for (int i = 0; i < tempJogadores.length - 1; i++){
+                for (int j = i + 1; j < tempJogadores.length; j++){
+                    if(tempJogadores[i].calcularDiferença(valorAlvo) > tempJogadores[j].calcularDiferença(valorAlvo)){
+                        Jogador temp = tempJogadores[i];
+                        tempJogadores[i] = tempJogadores[j];
+                        tempJogadores[j] = temp;
+                    }
                 }
             }
+
+            for (Jogador jogador : tempJogadores) {
+                System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(), jogador.calcularDiferença(valorAlvo));
+            }
+
+            /* mudar a pontuacao de cada jogador */
+            // jogador com maior distância
+            System.out.println("Jogador(a) " + tempJogadores[2].getNome() + " receberá -2 pontos.");
+            tempJogadores[2].setPontuacao(tempJogadores[2].getPontuacao() - 2);
+
+            // jogador com menor distância
+            System.out.println("Jogador(a) " + tempJogadores[0].getNome() + " receberá 0 ponto.");
+            tempJogadores[0].setPontuacao(tempJogadores[0].getPontuacao() - 0);
+
+            // jogador com distância média
+            System.out.println("Jogador(a) " + tempJogadores[1].getNome() + " receberá -1 ponto.");
+            tempJogadores[1].setPontuacao(tempJogadores[1].getPontuacao() - 1);
+        
+        } else {
+
+            for (Jogador jogador : tempJogadores) {
+                System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(), jogador.calcularDiferença(valorAlvo));
+            }
+
+            if(tempJogadores[0].calcularDiferença(valorAlvo) > tempJogadores[1].calcularDiferença(valorAlvo)){
+
+                System.out.println("Jogador(a) " + tempJogadores[0].getNome() + " receberá -1 ponto.");
+                tempJogadores[0].setPontuacao(tempJogadores[0].getPontuacao() - 1);
+
+            } else {
+                System.out.println("Jogador(a) " + tempJogadores[1].getNome() + " receberá -1 ponto.");
+                tempJogadores[1].setPontuacao(tempJogadores[1].getPontuacao() - 1);
+            }
         }
-
-        for (Jogador jogador : tempJogadores) {
-            System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(), jogador.calcularDiferença(valorAlvo));
-        }
-
-        /* mudar a pontuacao de cada jogador */
-        // jogador com maior distância
-        System.out.println("Jogador(a) " + tempJogadores[2].getNome() + " receberá -2 pontos.");
-        tempJogadores[2].setPontuacao(tempJogadores[2].getPontuacao() - 2);
-
-        // jogador com menor distância
-        System.out.println("Jogador(a) " + tempJogadores[0].getNome() + " receberá 0 ponto.");
-        tempJogadores[0].setPontuacao(tempJogadores[0].getPontuacao() - 0);
-
-        // jogador com distância média
-        System.out.println("Jogador(a) " + tempJogadores[1].getNome() + " receberá -1 ponto.");
-        tempJogadores[1].setPontuacao(tempJogadores[1].getPontuacao() - 1);
 
     }
 
