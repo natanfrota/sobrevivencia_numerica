@@ -7,9 +7,10 @@ import java.io.*;
 
 public class Juiz {
     final int NUMERO_DE_JOGADORES = 3;
+    final int PONTUACAO_DE_ELIMINACAO = -6;
     //Jogador[] jogadores = new Jogador[NUMERO_DE_JOGADORES];
-    Map<SocketAddress, Jogador> jogadores = null;
-    DatagramSocket soqueteServidor = null;
+    private Map<SocketAddress, Jogador> jogadores = null;
+    private DatagramSocket soqueteServidor = null;
     
     public Juiz(DatagramSocket soqueteServidor){
         this.soqueteServidor = soqueteServidor;
@@ -37,13 +38,12 @@ public class Juiz {
         }
     }
 
-    public void receberNumerosEscolhidos() throws IOException{
+    private void receberNumerosEscolhidos() throws IOException{
         int contadorDeNumeros = 0;
         while(contadorDeNumeros < this.jogadores.size()){
            byte[] buffer = new byte[50]; 
            DatagramPacket pacote = new DatagramPacket(buffer, buffer.length); // cria um pacote UDP para receber a mensagem e liga esse pacote a um vetor
            this.soqueteServidor.receive(pacote); //espera a msg e quando chegar armazena dentro do vetor num
-           
           
            String mensagem = new String(pacote.getData()).trim();
            int numero = Integer.parseInt(mensagem); 
@@ -66,11 +66,10 @@ public class Juiz {
         // avisa aos jogadores que o jogo vai começar
         enviarConfirmacao();
 
-        // recebe os números dos jogadores enquanto houver três jogadores; pois, ao sair um, as regras mudam
         System.out.println("Aguardando os números de cada jogador...");
         
-        // enquanto o jogo tiver mais de um jogador
-        while(this.jogadores.size() > 1){
+        while(this.jogadores.size() > 1){ // o jogo continua enquanto houver mais de um jogador
+            
             receberNumerosEscolhidos();
 
             System.out.println("Realizando cálculo da média...");
@@ -83,16 +82,12 @@ public class Juiz {
             System.out.println("Valor alvo encontrado...");
             System.out.printf("\nValor alvo: %.2f\n", valorAlvo);
             
-            /* comparar o valor alvo com o numero escolhido por cada um */
-            
-            // j1 - distancia 75 - perde 2 -- maior distância
-            // j2 - distancia 12 - não perde nada -- distância menor
-            // j3 - distancia 35 - perde 1 -- distância média
-            
             System.out.println("Realizando cálculo do placar do jogo...");
             this.calcularPlacar(valorAlvo);
 
             System.out.println("Atualizando quantidade de jogadores...");
+
+            // if cont == 1 { jogadores.get(cont - 1).setPontuação(10)  }
 
             String[] posicoes = {"primeiro", "segundo", "terceiro"};
             int i = 0;
@@ -111,7 +106,7 @@ public class Juiz {
 
             SocketAddress chave = null;
             for (Jogador jogador : this.jogadores.values()) {
-                if(jogador.getPontuacao() <= -6){
+                if(jogador.getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO){
                     chave = jogador.getEnderecoSoquete();
                 }
             }
@@ -149,10 +144,14 @@ public class Juiz {
         return media * 0.8;
     }
 
-    public void calcularPlacar(double valorAlvo){
+    private void calcularPlacar(double valorAlvo){
         Jogador[] tempJogadores = this.jogadores.values().toArray(new Jogador[this.jogadores.size()]);
 
-        if (jogadores.size() == this.NUMERO_DE_JOGADORES){
+        for (Jogador jogador : tempJogadores) {
+                System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(), jogador.calcularDiferença(valorAlvo));
+        }
+
+        if (jogadores.size() == this.NUMERO_DE_JOGADORES){ // cálculo para três jogadores
 
             for (int i = 0; i < tempJogadores.length - 1; i++){
                 for (int j = i + 1; j < tempJogadores.length; j++){
@@ -162,10 +161,6 @@ public class Juiz {
                         tempJogadores[j] = temp;
                     }
                 }
-            }
-
-            for (Jogador jogador : tempJogadores) {
-                System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(), jogador.calcularDiferença(valorAlvo));
             }
 
             /* mudar a pontuacao de cada jogador */
@@ -181,11 +176,7 @@ public class Juiz {
             System.out.println("Jogador(a) " + tempJogadores[1].getNome() + " receberá -1 ponto.");
             tempJogadores[1].setPontuacao(tempJogadores[1].getPontuacao() - 1);
         
-        } else {
-
-            for (Jogador jogador : tempJogadores) {
-                System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(), jogador.calcularDiferença(valorAlvo));
-            }
+        } else { // cálculo para dois jogadores
 
             if(tempJogadores[0].calcularDiferença(valorAlvo) > tempJogadores[1].calcularDiferença(valorAlvo)){
 
@@ -197,7 +188,6 @@ public class Juiz {
                 tempJogadores[1].setPontuacao(tempJogadores[1].getPontuacao() - 1);
             }
         }
-
     }
 
     public void finalizarJogo(){
