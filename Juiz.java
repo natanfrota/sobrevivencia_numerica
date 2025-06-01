@@ -11,13 +11,13 @@ public class Juiz {
     final int NUMERO_DE_JOGADORES = 3;
     final int PONTUACAO_DE_ELIMINACAO = -6;
     private int PONTUACAO_DE_VITORIA = 10;
-    private Jogador[] jogadores;
+    private Competidor[] jogadores;
     private DatagramSocket soqueteServidor;
     private int contadorDeJogadores;
 
     public Juiz(DatagramSocket soqueteServidor) {
         this.soqueteServidor = soqueteServidor;
-        this.jogadores = new Jogador[NUMERO_DE_JOGADORES];
+        this.jogadores = new Competidor[NUMERO_DE_JOGADORES];
         this.contadorDeJogadores = 0;
     }
 
@@ -51,7 +51,7 @@ public class Juiz {
             this.soqueteServidor.receive(requisicao);
 
             // cria um novo jogador
-            Jogador novoJogador = new Jogador(new String(requisicao.getData()), requisicao.getAddress(), requisicao.getPort());
+            Competidor novoJogador = new Competidor(new String(requisicao.getData()), requisicao.getAddress(), requisicao.getPort());
 
             // armazena-o
             this.jogadores[contadorDeJogadores] = novoJogador;
@@ -64,7 +64,7 @@ public class Juiz {
         }
     }
 
-    private void receberNumerosEscolhidos(List<Jogador> jogadoresAtuais) throws IOException {
+    private void receberNumerosEscolhidos(List<Competidor> jogadoresAtuais) throws IOException {
         int contadorDeNumeros = 0;
         while (contadorDeNumeros < jogadoresAtuais.size()) {
             byte[] buffer = new byte[50];
@@ -73,9 +73,9 @@ public class Juiz {
 
             String mensagem = new String(pacote.getData()).trim();
             int numero = Integer.parseInt(mensagem);
-            Jogador jogador = null;
+            Competidor jogador = null;
 
-            for (Jogador j : jogadoresAtuais){
+            for (Competidor j : jogadoresAtuais){
                 if(j.getEnderecoIP().equals(pacote.getAddress()) && j.getPorta() == pacote.getPort())
                     jogador = j;
             }
@@ -98,7 +98,7 @@ public class Juiz {
         System.out.println("\nQue comecem os jogos...");
 
         // converte o vetor para lista para remover os eliminados enquanto os mantém no vetor original
-        List<Jogador> jogadoresAtuais = new ArrayList<>(Arrays.asList(this.jogadores));
+        List<Competidor> jogadoresAtuais = new ArrayList<>(Arrays.asList(this.jogadores));
 
         System.out.println("\nAguardando os números de cada jogador...");
 
@@ -120,7 +120,7 @@ public class Juiz {
             this.calcularPlacar(jogadoresAtuais, valorAlvo);
 
             System.out.println("\nAtualizando quantidade de jogadores...");
-            for(Jogador j : jogadoresAtuais){
+            for(Competidor j : jogadoresAtuais){
                 if(j.getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO){
                     this.contadorDeJogadores--;
                 }
@@ -132,9 +132,9 @@ public class Juiz {
                 System.out.println("Fim de Jogo!");
 
                 /* busca o jogador vencedor */
-                Jogador vencedor = null;
-                for (Jogador jogador : jogadoresAtuais) {
-                    if(jogador.getPontuacao() != this.PONTUACAO_DE_ELIMINACAO)
+                Competidor vencedor = null;
+                for (Competidor jogador : jogadoresAtuais) {
+                    if(jogador.getPontuacao() > this.PONTUACAO_DE_ELIMINACAO)
                         vencedor = jogador;
                 }
 
@@ -153,9 +153,9 @@ public class Juiz {
 
             System.out.println("\nVerificando se algum jogador foi eliminado...\n");
 
-            Iterator<Jogador> it = jogadoresAtuais.iterator();
+            Iterator<Competidor> it = jogadoresAtuais.iterator();
             while (it.hasNext()) {
-                Jogador jogador = it.next();
+                Competidor jogador = it.next();
                 if (jogador.getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO) {
                     System.out.println("Jogador(a) " + jogador.getNome() + " foi eliminado(a).");
                     it.remove();
@@ -164,16 +164,16 @@ public class Juiz {
         }
         
         System.out.println("\nPlacar final: ");
-        for (Jogador jogador : this.jogadores) {
+        for (Competidor jogador : this.jogadores) {
             System.out.println("Jogador " + jogador.getNome() + " = " + jogador.getPontuacao());
         }
     }
 
-    private void enviarPlacarDosJogadores(List<Jogador> jogadoresAtuais) throws IOException {
+    private void enviarPlacarDosJogadores(List<Competidor> jogadoresAtuais) throws IOException {
         String[] posicoes = { "primeiro", "segundo", "terceiro" };
         int i = 0;
 
-        for (Jogador jogador : jogadoresAtuais) {
+        for (Competidor jogador : jogadoresAtuais) {
             System.out.println("Enviando placar para " + posicoes[i] + " jogador " + jogador.getPontuacao());
 
             byte[] placar = String.valueOf(jogador.getPontuacao()).getBytes();
@@ -190,7 +190,7 @@ public class Juiz {
         String[] posicoes = { "primeiro", "segundo", "terceiro" };
         int i = 0;
 
-        for (Jogador jogador : jogadores) {
+        for (Competidor jogador : jogadores) {
             System.out.println("Enviando autorização de início de jogo para " + posicoes[i] + " jogador.");
             DatagramPacket resposta2 = new DatagramPacket(confirmacao, confirmacao.length, jogador.getEnderecoIP(), jogador.getPorta());
             this.soqueteServidor.send(resposta2);
@@ -199,10 +199,10 @@ public class Juiz {
         }
     }
 
-    private double calcularMedia(List<Jogador> jogadoresAtuais) {
+    private double calcularMedia(List<Competidor> jogadoresAtuais) {
         int soma = 0;
 
-        for (Jogador jogador : jogadoresAtuais) {
+        for (Competidor jogador : jogadoresAtuais) {
             soma += jogador.getNumeroEscolhido();
         }
 
@@ -215,19 +215,14 @@ public class Juiz {
         return media * 0.8;
     }
 
-    private void calcularPlacar(List<Jogador> jogadoresAtuais, double valorAlvo) {
-        Jogador[] tempJogadores = jogadoresAtuais.toArray(new Jogador[jogadoresAtuais.size()]);
-
-        for (Jogador jogador : tempJogadores) {
-            System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(),jogador.calcularDiferença(valorAlvo));
-        }
-        System.out.println("");
+    private void calcularPlacar(List<Competidor> jogadoresAtuais, double valorAlvo) {
+        Competidor[] tempJogadores = jogadoresAtuais.toArray(new Competidor[jogadoresAtuais.size()]);
 
         /* ordena os jogadores de acordo com a diferença do valor alvo de cada um */
         for (int i = 0; i < tempJogadores.length - 1; i++) {
             for (int j = i + 1; j < tempJogadores.length; j++) {
                 if (tempJogadores[i].calcularDiferença(valorAlvo) > tempJogadores[j].calcularDiferença(valorAlvo)) {
-                    Jogador temp = tempJogadores[i];
+                    Competidor temp = tempJogadores[i];
                     tempJogadores[i] = tempJogadores[j];
                     tempJogadores[j] = temp;
                 } 
@@ -237,6 +232,11 @@ public class Juiz {
                 }
             }
         }
+
+        for (Competidor jogador : tempJogadores) {
+            System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(),jogador.calcularDiferença(valorAlvo));
+        }
+        System.out.println("");
 
         /* mudar a pontuacao de cada jogador */
         if (jogadoresAtuais.size() == this.NUMERO_DE_JOGADORES) { // cálculo para três jogadores
@@ -264,7 +264,7 @@ public class Juiz {
     }
 
     public static void main(String[] args) {
-        final int NUMERO_DA_PORTA = 57_651;
+        final int NUMERO_DA_PORTA = Integer.parseInt(args[0]);
         Juiz juiz = null;
 
         try {
