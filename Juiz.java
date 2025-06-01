@@ -262,7 +262,7 @@ public class Juiz {
     }
 
     public static void main(String[] args) {
-        final int NUMERO_DA_PORTA = Integer.parseInt(args[0]);
+        final int NUMERO_DA_PORTA = 56_892;
         Juiz juiz = null;
 
         try {

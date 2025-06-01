@@ -1,13 +1,15 @@
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
-import java.net.InetAddress;
+import java.util.Random;
 public class Jogador {
+    static Random gerador = new Random();
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Jogo da Sobrevivência Numérica");
         System.out.print("Digite seu nickname: ");
-        String nome = sc.nextLine();
+        String[] nomes = {"Gustavo", "Gabriel", "Ana", "Roberto", "Aurora", "Eleonor"};
+        String nome = nomes[gerador.nextInt(nomes.length)];
 
         System.out.println("Bem-vindo(a), " + nome);
 
@@ -17,7 +19,7 @@ public class Jogador {
             System.out.println("Digite 2 - para iniciar o jogo.");
             System.out.println("Digite 3 - para sair do jogo.");
             System.out.println("O que deseja?: ");
-            escolha = sc.nextInt();
+            escolha = 2;
 
             switch (escolha) {
                 case 1:
@@ -40,14 +42,14 @@ public class Jogador {
     public static void iniciarJogo(String nome, Scanner sc, String[] args){
         int PONTUACAO_DE_ELIMINACAO = -6;
         int PONTUACAO_DE_VITORIA = 10;
-        
+
         DatagramSocket soquete = null;
 
         try {
             System.out.println("\nIniciando o jogo...");
             soquete = new DatagramSocket();
-            InetAddress enderecoServidor = InetAddress.getByName(args[0]);
-            int portaServidor = Integer.parseInt(args[1]);
+            InetAddress enderecoServidor = InetAddress.getByName("localhost");
+            int portaServidor = 56_892;
             
             int placar;
            
@@ -68,7 +70,7 @@ public class Jogador {
                 int numero;
                 do {
                     System.out.println("\nEscolha um número entre 0 e 100: ");
-                    numero = sc.nextInt();
+                    numero = gerador.nextInt(101);
                 } while(numero < 0 || numero > 100);
 
                 System.out.println("Você escolheu o número: " + numero + ".");
