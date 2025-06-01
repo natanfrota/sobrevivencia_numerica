@@ -120,8 +120,6 @@ public class Juiz {
 
             System.out.println("\nAtualizando quantidade de jogadores...");
 
-            
-
             enviarPlacarDosJogadores(jogadoresAtuais);
 
             System.out.println("\nVerificando se algum jogador foi eliminado...\n");
@@ -203,6 +201,10 @@ public class Juiz {
                     Jogador temp = tempJogadores[i];
                     tempJogadores[i] = tempJogadores[j];
                     tempJogadores[j] = temp;
+                } 
+                else if(tempJogadores[i].calcularDiferença(valorAlvo) == tempJogadores[j].calcularDiferença(valorAlvo)){
+                    System.out.println("Diferenças iguais.");
+                    return;
                 }
             }
         }
