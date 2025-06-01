@@ -4,8 +4,6 @@ import java.util.Scanner;
 import java.net.InetAddress;
 public class Jogador {
     public static void main(String[] args) {
-        InetAddress enderecoServidor = InetAddress.getByName(args[0]);
-        int portaServidor = Integer.parseInt(args[1]);
         Scanner sc = new Scanner(System.in);
         System.out.println("Jogo da Sobrevivência Numérica");
         System.out.print("Digite seu nickname: ");
@@ -26,7 +24,7 @@ public class Jogador {
                     mostrarRegras();
                     break;
                 case 2:
-                    iniciarJogo(nome, sc, enderecoServidor, portaServidor);
+                    iniciarJogo(nome, sc, args);
                     break;
                 case 3:
                     System.out.println("\nVocê escolheu sair do jogo. Até mais!");
@@ -39,7 +37,7 @@ public class Jogador {
         
         sc.close();
     }
-    public static void iniciarJogo(String nome, Scanner sc, InetAddress enderecoServidor, int portaServidor){
+    public static void iniciarJogo(String nome, Scanner sc, String[] args){
         int PONTUACAO_DE_ELIMINACAO = -6;
         int PONTUACAO_DE_VITORIA = 10;
         
@@ -48,6 +46,8 @@ public class Jogador {
         try {
             System.out.println("\nIniciando o jogo...");
             soquete = new DatagramSocket();
+            InetAddress enderecoServidor = InetAddress.getByName(args[0]);
+            int portaServidor = Integer.parseInt(args[1]);
             
             int placar;
            
