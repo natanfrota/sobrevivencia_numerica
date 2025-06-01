@@ -1,16 +1,18 @@
 package sobrevivencia_numerica;
 
-import java.net.SocketAddress;
+import java.net.InetAddress;
 
 public class Jogador {
     private String nome;
-    private SocketAddress enderecoSoquete;
+    private InetAddress enderecoIP;
+    private int porta;
     private int pontuacao;
     private int numeroEscolhido;
     
-    public Jogador(String nome, SocketAddress enderecoSoquete){
+    public Jogador(String nome, InetAddress enderecoIP, int porta){
         this.nome = nome;
-        this.enderecoSoquete = enderecoSoquete;
+        this.enderecoIP = enderecoIP;
+        this.porta = porta;
     }
 
     public double calcularDiferença(double valorAlvo){
@@ -21,8 +23,12 @@ public class Jogador {
         return nome;
     }
     
-    public SocketAddress getEnderecoSoquete() {
-        return enderecoSoquete;
+    public InetAddress getEnderecoIP() {
+        return enderecoIP;
+    }
+
+    public int getPorta() {
+        return porta;
     }
     
     public int getNumeroEscolhido() {
