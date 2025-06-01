@@ -10,6 +10,7 @@ import java.io.*;
 public class Juiz {
     final int NUMERO_DE_JOGADORES = 3;
     final int PONTUACAO_DE_ELIMINACAO = -6;
+    private int PONTUACAO_DE_VITORIA = 10;
     private Jogador[] jogadores;
     private DatagramSocket soqueteServidor;
     private int contadorDeJogadores;
@@ -101,7 +102,7 @@ public class Juiz {
 
         System.out.println("\nAguardando os números de cada jogador...");
 
-        while (jogadoresAtuais.size() > 1) { // o jogo continua enquanto houver mais de um jogador
+        while (true) {
 
             receberNumerosEscolhidos(jogadoresAtuais);
 
@@ -119,6 +120,34 @@ public class Juiz {
             this.calcularPlacar(jogadoresAtuais, valorAlvo);
 
             System.out.println("\nAtualizando quantidade de jogadores...");
+            for(Jogador j : jogadoresAtuais){
+                if(j.getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO){
+                    this.contadorDeJogadores--;
+                }
+            }
+
+            /* se restar apenas um jogador, a repetição termina e ele será considerado o vencedor */
+            if(this.contadorDeJogadores == 1){
+
+                System.out.println("Fim de Jogo!");
+
+                /* busca o jogador vencedor */
+                Jogador vencedor = null;
+                for (Jogador jogador : jogadoresAtuais) {
+                    if(jogador.getPontuacao() != this.PONTUACAO_DE_ELIMINACAO)
+                        vencedor = jogador;
+                }
+
+                System.out.println("Jogador(a) " + vencedor.getNome() + " venceu o jogo!!!");
+                System.out.println("Enviando placar " + this.PONTUACAO_DE_VITORIA +" para o(a) primeiro(a) jogador(a), o(a) vencedor(a).");
+                byte[] placar = String.valueOf(this.PONTUACAO_DE_VITORIA).getBytes();
+                DatagramPacket resposta = new DatagramPacket(placar, placar.length, vencedor.getEnderecoIP(), vencedor.getPorta());
+                soqueteServidor.send(resposta);
+
+                enviarPlacarDosJogadores(jogadoresAtuais);
+                
+                break;
+            }
 
             enviarPlacarDosJogadores(jogadoresAtuais);
 
@@ -227,13 +256,6 @@ public class Juiz {
 
             System.out.println("Jogador(a) " + tempJogadores[1].getNome() + " receberá -1 ponto.");
             tempJogadores[1].setPontuacao(tempJogadores[1].getPontuacao() - 1);
-
-
-            if(tempJogadores[0].getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO){
-                tempJogadores[1].setPontuacao(10);
-            } else if(tempJogadores[1].getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO){
-                tempJogadores[0].setPontuacao(10);
-            }
         }
     }
 
