@@ -3,9 +3,7 @@ package sobrevivencia_numerica;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.io.*;
 
 public class Juiz {
@@ -37,7 +35,7 @@ public class Juiz {
 
             System.out.println("Jogador(a): " + novoJogador.getNome() + " entrou no jogo.");
             System.out.println("IP: " + requisicao.getAddress());
-            System.out.println("Porta: " + requisicao.getPort());
+            System.out.println("Porta: " + requisicao.getPort() + "\n");
 
             this.contadorDeJogadores++;
         }
@@ -99,7 +97,7 @@ public class Juiz {
 
             System.out.println("Atualizando quantidade de jogadores...");
 
-            // if cont == 1 { jogadores.get(cont - 1).setPontuação(10) }
+            
 
             enviarPlacarDosJogadores(jogadoresAtuais);
 
@@ -116,11 +114,7 @@ public class Juiz {
                 System.out.println("Jogador(a) " + elemento.getNome() + " foi eliminado(a).");
             }
         }
-
-        // talvez isso deva ser dentro da repetição
-        System.out.println("Fim de jogo!");
-        System.out.println("Jogador " + " venceu!!!");
-
+        
         System.out.println("Placar final: ");
         for (Jogador jogador : this.jogadores) {
             System.out.println("Jogador " + jogador.getNome() + " = " + jogador.getPontuacao());
@@ -143,11 +137,10 @@ public class Juiz {
     }
 
     private void enviarConfirmacao() throws IOException {
-        byte[] confirmacao = "Jogadores oponentes encontrados...\n\nQue comecem os jogos...".getBytes();
+        byte[] confirmacao = "Jogadores oponentes encontrados...\n\nQue comecem os jogos...\n".getBytes();
 
         for (Jogador jogador : jogadores) {
-            DatagramPacket resposta2 = new DatagramPacket(confirmacao, confirmacao.length,
-                    jogador.getEnderecoSoquete());
+            DatagramPacket resposta2 = new DatagramPacket(confirmacao, confirmacao.length, jogador.getEnderecoSoquete());
             this.soqueteServidor.send(resposta2);
         }
     }
@@ -172,8 +165,7 @@ public class Juiz {
         Jogador[] tempJogadores = jogadoresAtuais.toArray(new Jogador[jogadoresAtuais.size()]);
 
         for (Jogador jogador : tempJogadores) {
-            System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(),
-                    jogador.calcularDiferença(valorAlvo));
+            System.out.printf("Distância do valor alvo do(a) jogador(a) - %s = %f\n", jogador.getNome(),jogador.calcularDiferença(valorAlvo));
         }
 
         if (jogadoresAtuais.size() == this.NUMERO_DE_JOGADORES) { // cálculo para três jogadores
@@ -211,6 +203,12 @@ public class Juiz {
             } else {
                 System.out.println("Jogador(a) " + tempJogadores[1].getNome() + " receberá -1 ponto.");
                 tempJogadores[1].setPontuacao(tempJogadores[1].getPontuacao() - 1);
+            }
+
+            if(tempJogadores[0].getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO){
+                tempJogadores[1].setPontuacao(10);
+            } else if(tempJogadores[1].getPontuacao() <= this.PONTUACAO_DE_ELIMINACAO){
+                tempJogadores[0].setPontuacao(10);
             }
         }
     }
