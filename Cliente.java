@@ -55,7 +55,7 @@ public class Cliente {
            
             DatagramPacket requisicao = new DatagramPacket(nome.getBytes(), nome.getBytes().length, enderecoServidor, portaServidor);
 
-            System.out.println("\nEnviando seu cadastro para o servidor do jogo...");
+            System.out.println("Enviando seu cadastro para o servidor do jogo...");
             soquete.send(requisicao);
             
             System.out.println("Aguardando jogadores oponentes...");
