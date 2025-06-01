@@ -23,7 +23,7 @@ public class Cliente {
 
             switch (escolha) {
                 case 1:
-                    Juiz.mostrarRegras();
+                    mostrarRegras();
                     break;
                 case 2:
                     iniciarJogo(nome, sc);
@@ -108,5 +108,26 @@ public class Cliente {
                 soquete.close();
             sc.close();
         }
+    }
+
+    public static void mostrarRegras(){
+        System.out.println("\n=====================================================================");
+        System.out.println("REGRAS DO JOGO SOBREVIVÊNCIA NUMÉRICA");
+        System.out.println("=====================================================================");
+        System.out.println("No início três jogadores jogam, escolhendo um número entre 0 e 100.");
+        System.out.println("O Servidor do jogo receberá os três números escolhidos e calculará a média dos valores recebidos.");
+        System.out.println("O resultado das médias é então multiplicado por 0,8.");
+        System.out.println("Este novo valor resultante será o valor alvo.");
+        System.out.println("O valor alvo é comparado com os valores que cada jogador escolheu.");
+        System.out.println("O jogador que mais se distanciou do valor alvo, perde dois pontos.");
+        System.out.println(" O jogador que mais se aproximou do valor alvo, não perde pontos.");
+        System.out.println("O outro jogador perde apenas um ponto.");
+        System.out.println("O jogador que chegar a menos seis pontos, primeiro, será eliminado definitivamente do jogo.");
+        System.out.println("Quando restarem apenas dois jogadores, as regras do jogo mudam.");
+        System.out.println("O jogador que mais se distanciar do valor alvo, perde um ponto.");
+        System.out.println("O outro jogador, não perde pontos.");
+        System.out.println("O jogador que primeiro chegar a menos seis pontos, será eliminado do jogo.");
+        System.out.println("O último jogador é declarado vencedor do Jogo da Sobrevivência Numérica.");
+        System.out.println("=====================================================================\n");
     }
 }
