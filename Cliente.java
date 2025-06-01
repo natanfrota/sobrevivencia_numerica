@@ -13,10 +13,33 @@ public class Cliente {
 
         System.out.println("Bem-vindo(a), " + nome);
 
-        System.out.println("Digite 1 - para ver as regras do jogo.");
-        System.out.println("Digite 2 - para iniciar o jogo.");
-        System.out.println("Digite 3 - para sair do jogo.");
+        int escolha;
+        do {
+            System.out.println("Digite 1 - para ver as regras do jogo.");
+            System.out.println("Digite 2 - para iniciar o jogo.");
+            System.out.println("Digite 3 - para sair do jogo.");
+            System.out.println("O que deseja?: ");
+            escolha = sc.nextInt();
 
+            switch (escolha) {
+                case 1:
+                    Juiz.mostrarRegras();
+                    break;
+                case 2:
+                    iniciarJogo(nome, sc);
+                    break;
+                case 3:
+                    System.out.println("Saindo do jogo...");
+                    break;
+            
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (escolha != 2 && escolha != 3);
+        
+        sc.close();
+    }
+    public static void iniciarJogo(String nome, Scanner sc){
         int PONTUACAO_DE_ELIMINACAO = -6;
         int PONTUACAO_DE_VITORIA = 10;
         
