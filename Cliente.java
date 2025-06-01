@@ -29,7 +29,7 @@ public class Cliente {
                     iniciarJogo(nome, sc);
                     break;
                 case 3:
-                    System.out.println("Saindo do jogo...");
+                    System.out.println("\nVocê escolheu sair do jogo. Até mais!");
                     break;
             
                 default:
@@ -46,7 +46,7 @@ public class Cliente {
         DatagramSocket soquete = null;
 
         try {
-            System.out.println("Iniciando o jogo...");
+            System.out.println("\nIniciando o jogo...");
             soquete = new DatagramSocket();
             InetAddress enderecoServidor = InetAddress.getByName("localhost");
             int portaServidor = 57_651;
@@ -55,7 +55,7 @@ public class Cliente {
            
             DatagramPacket requisicao = new DatagramPacket(nome.getBytes(), nome.getBytes().length, enderecoServidor, portaServidor);
 
-            System.out.println("Enviando seu cadastro para o servidor do jogo...");
+            System.out.println("\nEnviando seu cadastro para o servidor do jogo...");
             soquete.send(requisicao);
             
             System.out.println("Aguardando jogadores oponentes...");
@@ -69,18 +69,17 @@ public class Cliente {
             do {
                 int numero;
                 do {
-                    System.out.println("Escolha um número entre 0 e 100: ");
+                    System.out.println("\nEscolha um número entre 0 e 100: ");
                     numero = sc.nextInt();
                 } while(numero < 0 || numero > 100);
 
                 System.out.println("Você escolheu o número: " + numero + ".");
 
                 System.out.println("Enviando o número escolhido para o servidor do jogo...");
-                // ......... mais coisa para imprimir
                 byte[] conteudo2 = String.valueOf(numero).getBytes();
                 DatagramPacket requisicao2 = new DatagramPacket(conteudo2, conteudo2.length, enderecoServidor, portaServidor);
                 soquete.send(requisicao2);
-
+                System.out.println("O servidor está realizando os cálculos necessários...");
                 System.out.println("Aguardando a atualização de seu placar...");
                 byte[] conteudo3 = new byte[10];
                 DatagramPacket resposta2 = new DatagramPacket(conteudo3, conteudo3.length);
@@ -93,9 +92,9 @@ public class Cliente {
             } while(placar > PONTUACAO_DE_ELIMINACAO && placar != PONTUACAO_DE_VITORIA);
 
             if(placar <= PONTUACAO_DE_ELIMINACAO){
-                System.out.println("Você foi eliminado(a)!");
+                System.out.println("\nVocê foi eliminado(a)!");
             } else {
-                System.out.println("Você foi o(a) vencedor(a)!");
+                System.out.println("\nVocê foi o(a) vencedor(a)!");
             }
 
 
