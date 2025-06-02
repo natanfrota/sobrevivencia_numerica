@@ -8,7 +8,7 @@ import java.io.*;
 public class Juiz {
     final int NUMERO_DE_JOGADORES = 3;
     final int PONTUACAO_DE_ELIMINACAO = -6;
-    private int PONTUACAO_DE_VITORIA = 10;
+    final int PONTUACAO_DE_VITORIA = 10;
     private Competidor[] jogadores;
     private DatagramSocket soqueteServidor;
     private int contadorDeJogadores;
