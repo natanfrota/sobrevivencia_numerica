@@ -257,23 +257,23 @@ public class Juiz {
         }
     }
 
-    public void finalizarJogo() {
-        this.soqueteServidor.close();
-    }
-
     public static void main(String[] args) {
         final int NUMERO_DA_PORTA = Integer.parseInt(args[0]);
         Juiz juiz = null;
+        DatagramSocket soqueteServidor = null;
 
         try {
-            DatagramSocket soqueteServidor = new DatagramSocket(NUMERO_DA_PORTA);
+            soqueteServidor = new DatagramSocket(NUMERO_DA_PORTA);
             juiz = new Juiz(soqueteServidor);
             mostrarRegras();
             juiz.aguardarJogadores();
             juiz.iniciarJogo();
-            juiz.finalizarJogo();
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } finally {
+            if (soqueteServidor != null){
+                soqueteServidor.close();
+            }
         }
     }
 }
