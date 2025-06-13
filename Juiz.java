@@ -1,5 +1,3 @@
-
-
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +8,7 @@ import java.io.*;
 public class Juiz {
     final int NUMERO_DE_JOGADORES = 3;
     final int PONTUACAO_DE_ELIMINACAO = -6;
-    private int PONTUACAO_DE_VITORIA = 10;
+    final int PONTUACAO_DE_VITORIA = 10;
     private Competidor[] jogadores;
     private DatagramSocket soqueteServidor;
     private int contadorDeJogadores;
@@ -259,23 +257,23 @@ public class Juiz {
         }
     }
 
-    public void finalizarJogo() {
-        this.soqueteServidor.close();
-    }
-
     public static void main(String[] args) {
         final int NUMERO_DA_PORTA = Integer.parseInt(args[0]);
         Juiz juiz = null;
+        DatagramSocket soqueteServidor = null;
 
         try {
-            DatagramSocket soqueteServidor = new DatagramSocket(NUMERO_DA_PORTA);
+            soqueteServidor = new DatagramSocket(NUMERO_DA_PORTA);
             juiz = new Juiz(soqueteServidor);
             mostrarRegras();
             juiz.aguardarJogadores();
             juiz.iniciarJogo();
-            juiz.finalizarJogo();
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } finally {
+            if (soqueteServidor != null){
+                soqueteServidor.close();
+            }
         }
     }
 }
